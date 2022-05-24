@@ -94,7 +94,7 @@ class TaskBooker(Node):
     def perform_launch(self, performer_identifier, task_namespace):
         print('\n\n--------------------------------------------------------\n\n')
 
-        perfomer_node = launch_ros.actions.Node(package = 'task_car', executable=performer_identifier, output='screen', namespace=task_namespace)
+        perfomer_node = launch_ros.actions.Node(package = 'ciic_ros_tasks', executable=performer_identifier, output='screen', namespace=task_namespace)
 
         ld = LaunchDescription([
             perfomer_node,
