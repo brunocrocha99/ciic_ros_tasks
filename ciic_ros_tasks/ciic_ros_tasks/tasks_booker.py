@@ -15,7 +15,7 @@ from launch.event_handlers import (OnProcessExit, OnProcessIO, OnShutdown)
 from launch.events import Shutdown
 from launch.substitutions import (LocalSubstitution)
 
-from task_distribution_interfaces.msg import TaskBooking
+from ciic_ros_tasks_messages.msg import TaskBooking
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
