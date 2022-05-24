@@ -8,7 +8,7 @@ from getkey import getkey, keys
 
 from std_msgs.msg import String
 from sensor_msgs.msg import Range
-from task_distribution_interfaces.msg import TaskBooking
+from ciic_ros_tasks_messages.msg import TaskBooking
 
 class StopNodes(Exception):
     pass
