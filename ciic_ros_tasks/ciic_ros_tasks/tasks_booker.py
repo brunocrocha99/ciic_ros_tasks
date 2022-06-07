@@ -53,18 +53,6 @@ class TaskBooker(Node):
         self.publisher_.publish(msg)
         self.get_logger().info('[BOOKING REQUEST] | SENDER_ID:"%d" | RECIPIENT_ID:"%d" | TASK_NAME:"%s" | ACTION:"%s"' % (msg.sender_id, msg.recipient_id, msg.task_namespace, msg.action))
 
-    #def timer_service_request(self,delay):
-    #    time.sleep(delay)
-
-    #   self.get_logger().info("[ServiceCallback] Service response timer callback - waited for %d seconds!" % delay)
-    
-    #    if self.received_response == False:
-    #        self.get_logger().info("[ServiceCallback] No response received! Restarting...")
-    #        self.booking = False
-    #        self.abort = True
-        
-    #    self.received_response = False
-
     def listener_callback(self, msg):
         if (msg.action == 'B'):
             return

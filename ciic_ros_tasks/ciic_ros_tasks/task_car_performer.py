@@ -10,6 +10,8 @@ from rclpy.node import Node
 from hcsr04sensor import sensor
 from std_msgs.msg import String
 from sensor_msgs.msg import Range
+from std_msgs.msg import Int32
+from rclpy.executors import MultiThreadedExecutor
 
 class RemoteCar(Node):
     def __init__(self):
@@ -47,9 +49,17 @@ class RemoteCar(Node):
 
       #publisher definition
       self.publisher_ = self.create_publisher(Range, 'car_obs_distance', 10)
+      self.publisher_ping_ = self.create_publisher(Int32, 'ping', 10)
 
       self.distance_timer = self.create_timer(0.5, self.ultrassonic_callback)
       self.task_node_timer = self.create_timer(2, self.check_task_node_state)
+
+      self.subscription_ping = self.create_subscription(
+        Int32,
+        'ping',
+        self.receive_ping,
+        10)
+      self.subscription_ping
 
     def check_task_node_state(self):
       self.get_logger().info('[NODE CHECKER] JUST LOOKING...')     
@@ -76,6 +86,14 @@ class RemoteCar(Node):
 
       if value >= 0 and value <= 4:
         self.controls[value]()
+
+    def receive_ping(self, msg):
+      self.get_logger().info("Ping received")
+      self.get_logger().info("sending ping")
+
+      msg_to_send = Int32()
+      msg_to_send.data = 1
+      publisher_ping_.publish(msg_to_send)
 
     def forward(self):
       self.get_logger().info("Moving forward...")
@@ -132,20 +150,14 @@ class RemoteCar(Node):
       GPIO.output(19, False)
       GPIO.output(20, False)
 
-    def testled(self):
-      while True:
-        GPIO.output(18, True)
-        time.sleep(1)
-        GPIO.output(18, False)
-        time.sleep(1)
-
-
 def main(args=None):
     rclpy.init(args=args)
+    executor = MultiThreadedExecutor(num_threads=4)
+    car_subscriber = RemoteCar()
+    executor.add_node(car_subscriber)
 
-    try:
-      car_subscriber = RemoteCar()
-      rclpy.spin(car_subscriber)
+    try:      
+      executor.spin()
 
     except KeyboardInterrupt:
       car_subscriber.destroy_node()
