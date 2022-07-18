@@ -8,6 +8,9 @@ from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression
 
+#Launch file used in pair with /config/*.yaml files
+#Not mandatory
+
 def generate_launch_description():
     task_name = LaunchConfiguration('namespace')
 

@@ -17,6 +17,7 @@ from launch.substitutions import (LocalSubstitution)
 
 from ciic_ros_tasks_messages.msg import TaskBooking
 
+#change path in order to laucnh performer files
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 class TaskBooker(Node):
@@ -24,12 +25,12 @@ class TaskBooker(Node):
     def __init__(self):
         super().__init__('task_booker')
 
-        self.declare_parameter('my_id', 90)
+        #booker id parameter, defined at init
+        self.declare_parameter('my_id', 90) # default value
         self.id = self.get_parameter('my_id').value
         
+        #avoids the booking of multiple tasks at the same time
         self.booking = False
-        #self.received_response = False
-        #self.abort = False
 
         #publisher definition
         self.publisher_ = self.create_publisher(TaskBooking, '/tasks_booking', 10)
@@ -43,7 +44,7 @@ class TaskBooker(Node):
             10)
         self.subscription # prevent unused variable warning
 
-    #publish B with service name to call
+    #publish B to book task
     def send_booking_request(self, advertiser_id):
         msg = TaskBooking()
         msg.sender_id = self.id
@@ -53,6 +54,7 @@ class TaskBooker(Node):
         self.publisher_.publish(msg)
         self.get_logger().info('[BOOKING REQUEST] | SENDER_ID:"%d" | RECIPIENT_ID:"%d" | TASK_NAME:"%s" | ACTION:"%s"' % (msg.sender_id, msg.recipient_id, msg.task_namespace, msg.action))
 
+    #process received messages through /tasks_booking topic
     def listener_callback(self, msg):
         if (msg.action == 'B'):
             return
@@ -74,11 +76,14 @@ class TaskBooker(Node):
         if(msg.action == 'F' and msg.recipient_id == self.id):
             self.reset_booking()
             return
-        
+    
+    #used when task is shutdown
     def reset_booking(self):
         self.booking = False
         self.task_namespace = ''
 
+    #performer node launcher for the booked tasks
+    #place the performer files in the same directory as this file
     def perform_launch(self, performer_identifier, task_namespace):
         print('\n\n--------------------------------------------------------\n\n')
 

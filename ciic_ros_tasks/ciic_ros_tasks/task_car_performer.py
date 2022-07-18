@@ -1,8 +1,3 @@
-#Front-left: 13, 16
-#Front-right: 6, 12
-#Back-left: 26, 21
-#Back-right: 19, 20
-
 import rclpy
 import time
 import RPi.GPIO as GPIO
@@ -23,23 +18,28 @@ class RemoteCar(Node):
       GPIO.setmode(GPIO.BCM)
       GPIO.setwarnings(False)
 
+      #wheels' ports definitions
+      #Front-left: 13, 16
       GPIO.setup(13,GPIO.OUT)
       GPIO.setup(16,GPIO.OUT)
 
+      #Front-right: 6, 12
       GPIO.setup(6,GPIO.OUT)
       GPIO.setup(12,GPIO.OUT)
 
+      #Back-left: 26, 21
       GPIO.setup(26,GPIO.OUT)
       GPIO.setup(21,GPIO.OUT)
 
+      #Back-right: 19, 20
       GPIO.setup(19,GPIO.OUT)
       GPIO.setup(20,GPIO.OUT)
 
-      # ultrassons
+      # ultrassound ports
       self.trig = 3
       self.echo = 4
 
-      #self.testled()
+      #topic to receive controls
       self.subscription = self.create_subscription(
           String,
           'cmd_car',
@@ -61,16 +61,18 @@ class RemoteCar(Node):
         10)
       self.subscription_ping
 
+    #stop performing task if pair task node is shutdown
     def check_task_node_state(self):
-      self.get_logger().info('[NODE CHECKER] JUST LOOKING...')     
+      #self.get_logger().info('[NODE CHECKER] JUST LOOKING...')     
       for tup in self.get_node_names_and_namespaces():
         if tup[1] == self.get_namespace() and self.task_node_name in tup[0]:
           return
 
-      self.get_logger().info('[TASK NODE DOWN] LOOKING FOR OTHER TASKS')
+      #self.get_logger().info('[TASK NODE DOWN] LOOKING FOR OTHER TASKS')
 
       raise KeyboardInterrupt
 
+    #publish real time registered distance
     def ultrassonic_callback(self):
       msg = Range()
       msg.radiation_type = Range.ULTRASOUND
@@ -79,6 +81,7 @@ class RemoteCar(Node):
 
       self.publisher_.publish(msg)
 
+    #call motion control function based on the received value
     def listener_callback(self, msg):
       self.get_logger().info('I heard: "%s"' % msg.data)
 
